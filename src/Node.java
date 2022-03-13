@@ -31,7 +31,9 @@ public class Node {
 
     public  void kill(){
         samples = new ArrayList<>();
-        children = new Node[]{new Node(), new Node(), new Node()};
+        children[0] = new Node();
+        children[1] = new Node();
+        children[2] = new Node();
         total = 0;
         class1total=0;
         class2total=0;
@@ -71,21 +73,8 @@ public class Node {
 
     private void makeChild(){
         for(int i=0; i<13; i++){
-//            double[] randomPoints = new double[10];
-//            for (int j=0; j<10; j++){
-//                randomPoints[j] = Driver.min[i] + Driver.max[i]*Math.random();
-//            }
             for(double j = Driver.min[i]; j<Driver.max[i]; j++){
                 for(double k=j+1; k<Driver.max[i]; k++){
-//                    double a,b;
-//                    if(randomPoints[j]>randomPoints[k]){
-//                        a=randomPoints[k];
-//                        b=randomPoints[j];
-//                    }else{
-//                        a=randomPoints[j];
-//                        b=randomPoints[k];
-//                    }
-
                     divide(i,j,k);
                     if(bestSplitAttribute != 20){
                         if (weightedEntropyOfTheChildren()<bestWeightedEntropy){
@@ -104,7 +93,7 @@ public class Node {
             }
         }
         divide(bestSplitAttribute,bestSplit1,bestSplit2);
-        if (weightedEntropyOfTheChildren()>entropy()){
+        if (weightedEntropyOfTheChildren()<entropy()){
             makeChild();
         }else{
             children[0].split();
