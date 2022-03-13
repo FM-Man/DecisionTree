@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Driver {
+    public static ArrayList<Sample> samples = new ArrayList<>();
+    public static ArrayList<Sample> class1 = new ArrayList<>();
+    public static ArrayList<Sample> class2 = new ArrayList<>();
+    public static ArrayList<Sample> class3 = new ArrayList<>();
+    public static ArrayList<Sample> training = new ArrayList<>();
+    public static ArrayList<Sample> test = new ArrayList<>();
+
+    public static int class1total=0, class2total=0, class3total=0, class1train=0, class2train=0, class3train=0;
+    public static double[] min = new double[13];
+    public static double[] max = new double[13];
+
+
     public static void main(String[] args) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File("wine.data"));
 
-        ArrayList<Sample> samples = new ArrayList<>();
-        ArrayList<Sample> class1 = new ArrayList<>();
-        ArrayList<Sample> class2 = new ArrayList<>();
-        ArrayList<Sample> class3 = new ArrayList<>();
-        ArrayList<Sample> training = new ArrayList<>();
-        ArrayList<Sample> test = new ArrayList<>();
-
-        int class1total=0, class2total=0, class3total=0, class1train=0, class2train=0, class3train=0;
-        double[] min = new double[13];
-        double[] max = new double[13];
         for (int i=0; i<13; i++){
             min[i] = Double.MAX_VALUE;
             max[i] = Double.MIN_VALUE;
