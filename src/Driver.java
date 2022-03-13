@@ -14,6 +14,7 @@ public class Driver {
     public static int class1total=0, class2total=0, class3total=0, class1train=0, class2train=0, class3train=0;
     public static double[] min = new double[13];
     public static double[] max = new double[13];
+    public static Node root;
 
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -60,9 +61,34 @@ public class Driver {
                 if(sample.get(i) > max[i]) max[i] = sample.get(i);
             }
         }
-
-
+        train();
+        test();
     }
 
-    //public static double entropy()
+    public static void train(){
+        root = new Node();
+        root.init(null);
+        root.samples.addAll(training);
+        root.split();
+    }
+    public static void test(){
+        int correct = 0;
+        int wrong = 0;
+        Node node = root;
+        for (Sample sample:test) {
+            node = root;
+            while (!node.isHomogenous){
+                if(sample.get(node.bestSplitAttribute) < node.bestSplit1)
+                    node = node.children[0];
+                else if(sample.get(node.bestSplitAttribute) < node.bestSplit2)
+                    node = node.children[1];
+                else
+                    node = node.children[2];
+            }
+            if(node.samples.get(0)._class == sample._class)
+                correct++;
+            else wrong++;
+        }
+        System.out.println("correct = "+correct+" wrong = "+wrong);
+    }
 }

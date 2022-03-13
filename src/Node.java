@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Node {
     ArrayList<Sample> samples = new ArrayList<>();
-    Node[] children = new Node[]{new Node(), new Node(), new Node()};
+    Node[] children = new Node[3];
     Node parent;
     double total = 0;
     double class1total=0;
@@ -12,9 +12,12 @@ public class Node {
     double bestSplit1;
     double bestSplit2;
     double bestWeightedEntropy;
-    boolean homogenous = false;
+    boolean isHomogenous = false;
 
     public void init(Node p){
+        children[0]= new Node();
+        children[1] = new Node();
+        children[2] = new Node();
         total = samples.size();
         parent = p;
         for (Sample sample : samples) {
@@ -63,38 +66,38 @@ public class Node {
         if(class1total*class2total + class1total*class3total + class2total*class3total != 0) {
             makeChild();
         }
-        else homogenous = true;
+        else isHomogenous = true;
     }
 
     private void makeChild(){
         for(int i=0; i<13; i++){
-            double[] randomPoints = new double[10];
-            for (int j=0; j<10; j++){
-                randomPoints[j] = Driver.min[i] + Driver.max[i]*Math.random();
-            }
-            for(int j =0; j<10; j++){
-                for(int k=j+1; k<10; k++){
-                    double a,b;
-                    if(randomPoints[j]>randomPoints[k]){
-                        a=randomPoints[k];
-                        b=randomPoints[j];
-                    }else{
-                        a=randomPoints[j];
-                        b=randomPoints[k];
-                    }
+//            double[] randomPoints = new double[10];
+//            for (int j=0; j<10; j++){
+//                randomPoints[j] = Driver.min[i] + Driver.max[i]*Math.random();
+//            }
+            for(double j = Driver.min[i]; j<Driver.max[i]; j++){
+                for(double k=j+1; k<Driver.max[i]; k++){
+//                    double a,b;
+//                    if(randomPoints[j]>randomPoints[k]){
+//                        a=randomPoints[k];
+//                        b=randomPoints[j];
+//                    }else{
+//                        a=randomPoints[j];
+//                        b=randomPoints[k];
+//                    }
 
-                    divide(i,a,b);
+                    divide(i,j,k);
                     if(bestSplitAttribute != 20){
                         if (weightedEntropyOfTheChildren()<bestWeightedEntropy){
                             bestSplitAttribute = i;
-                            bestSplit1 = a;
-                            bestSplit2 = b;
+                            bestSplit1 = j;
+                            bestSplit2 = k;
                             bestWeightedEntropy = weightedEntropyOfTheChildren();
                         }
                     }else{
                         bestSplitAttribute = i;
-                        bestSplit1 = a;
-                        bestSplit2 = b;
+                        bestSplit1 = j;
+                        bestSplit2 = k;
                         bestWeightedEntropy = weightedEntropyOfTheChildren();
                     }
                 }
