@@ -30,4 +30,23 @@ public class Sample {
         _12_OD280_OD315_OfDilutedWines = data[12];
         _13_proline = data[13];
     }
+
+    public double get(int i){
+        switch (i) {
+            case 0: return _1_alcohol;
+            case 1: return _2_malicAcid;
+            case 2: return _3_ash;
+            case 3: return _4_alcalinityOfAsh;
+            case 4: return _5_magnesium;
+            case 5: return _6_totalPhenols;
+            case 6: return _7_flavanoids;
+            case 7: return _8_nonflavanoidPhenols;
+            case 8: return _9_proanthocyanins;
+            case 9: return _10_colorIntensity;
+            case 10: return _11_hue;
+            case 11: return _12_OD280_OD315_OfDilutedWines;
+            default: return _13_proline;
+        }
+
+    }
 }
