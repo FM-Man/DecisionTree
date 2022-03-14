@@ -48,32 +48,6 @@ public class Driver {
                 class3total++;
             }
 
-
-            for (int i=0; i<13; i++){
-                if(sample.get(i) < min[i]) min[i] = sample.get(i);
-                if(sample.get(i) > max[i]) max[i] = sample.get(i);
-            }
-        }
-
-        double correct = 0;
-        double wrong = 0;
-        for(int i =0; i<100; i++){
-            train();
-            double correctRatio = test();
-            double c = correctRatio*test.size();
-            double w = test.size() - c;
-            correct+=c;
-            wrong+=w;
-        }
-
-        System.out.println(correct/(correct+wrong)*100 +"%");
-
-    }
-
-    public static void train(){
-        training = new ArrayList<>();
-        test = new ArrayList<>();
-        for (Sample sample:samples) {
             if(Math.random() < .8) {
                 training.add(sample);
                 if(sample._class == 1) class1train++;
@@ -82,18 +56,25 @@ public class Driver {
             }
             else test.add(sample);
 
+            for (int i=0; i<13; i++){
+                if(sample.get(i) < min[i]) min[i] = sample.get(i);
+                if(sample.get(i) > max[i]) max[i] = sample.get(i);
+            }
         }
+        train();
+        test();
+    }
 
-
+    public static void train(){
         root = new Node();
         root.init(null);
         root.samples.addAll(training);
         root.split();
     }
-    public static double test(){
+    public static void test(){
         int correct = 0;
         int wrong = 0;
-        Node node;
+        Node node = root;
         for (Sample sample:test) {
             node = root;
             while (!node.isHomogenous){
@@ -109,6 +90,5 @@ public class Driver {
             else wrong++;
         }
         System.out.println("correct = "+correct+" wrong = "+wrong);
-        return (double) correct / (double) (correct+wrong);
     }
 }
