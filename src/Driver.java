@@ -32,29 +32,40 @@ public class Driver {
             Sample sample = new Sample(data);
             samples.add(sample);
 
-            if(Math.random() < .8) {
-                training.add(sample);
-            }
-            else test.add(sample);
+
 
             for (int i=0; i<13; i++){
                 if(sample.get(i) < min[i]) min[i] = sample.get(i);
                 if(sample.get(i) > max[i]) max[i] = sample.get(i);
             }
         }
-        train();
-        test();
+        double totalCorrectTest=0;
+        double totalWrong=0;
+        for(int i=0;i<10;i++){
+            train();
+            double correctRatio = test();
+            totalCorrectTest+=correctRatio*test.size();
+            totalWrong+=(1-correctRatio)*test.size();
+        }
+        System.out.println("average correctness: "+totalCorrectTest/(totalCorrectTest+totalWrong)*100+"%");
     }
 
     public static void train(){
+        training = new ArrayList<>();
+        test = new ArrayList<>();
+        for (Sample sample:samples) {
+            if(Math.random() < .8) training.add(sample);
+            else test.add(sample);
+        }
+
         root = new Node();
         root.samples.addAll(training);
         root.init();
         root.split();
     }
-    public static void test(){
-        int correct = 0;
-        int wrong = 0;
+    public static double test(){
+        double correct = 0;
+        double wrong = 0;
         Node node;
         for (Sample sample:test) {
             node = root;
@@ -72,5 +83,6 @@ public class Driver {
             else wrong++;
         }
         System.out.println("correct = "+correct+" wrong = "+wrong);
+        return correct/(correct+wrong);
     }
 }
