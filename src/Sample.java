@@ -47,6 +47,5 @@ public class Sample {
             case 11: return _12_OD280_OD315_OfDilutedWines;
             default: return _13_proline;
         }
-
     }
 }

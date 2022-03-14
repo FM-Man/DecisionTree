@@ -3,28 +3,27 @@ import java.util.ArrayList;
 public class Node {
     ArrayList<Sample> samples = new ArrayList<>();
     Node[] children = new Node[3];
-    Node parent;
     double total = 0;
-    double class1total=0;
-    double class2total=0;
-    double class3total=0;
+    int class1total=0;
+    int class2total=0;
+    int class3total=0;
     int bestSplitAttribute=20;
     double bestSplit1;
     double bestSplit2;
     double bestWeightedEntropy;
     boolean isHomogenous = false;
 
-    public void init(Node p){
-        children[0]= new Node();
+    public void init(){
+        children[0] = new Node();
         children[1] = new Node();
         children[2] = new Node();
         total = samples.size();
-        parent = p;
         for (Sample sample : samples) {
             if (sample._class == 1) class1total++;
             else if (sample._class == 2) class2total++;
             else class3total++;
         }
+        //System.out.println(class1total+" "+class2total+" "+class3total);
     }
 
 
@@ -71,64 +70,59 @@ public class Node {
 
     private void makeChild(){
         for(int i=0; i<13; i++){
-//            double[] randomPoints = new double[10];
-//            for (int j=0; j<10; j++){
-//                randomPoints[j] = Driver.min[i] + Driver.max[i]*Math.random();
-//            }
-            for(double j = Driver.min[i]; j<Driver.max[i]; j++){
-                for(double k=j+1; k<Driver.max[i]; k++){
-//                    double a,b;
-//                    if(randomPoints[j]>randomPoints[k]){
-//                        a=randomPoints[k];
-//                        b=randomPoints[j];
-//                    }else{
-//                        a=randomPoints[j];
-//                        b=randomPoints[k];
-//                    }
-
+            double quotient = (Driver.max[i]-Driver.min[i])/20;
+            for(double j = Driver.min[i]; j<Driver.max[i]; j+=quotient){
+                for(double k=j+quotient; k<Driver.max[i]; k+=quotient){
                     divide(i,j,k);
-                    if(bestSplitAttribute != 20){
-                        if (weightedEntropyOfTheChildren()<bestWeightedEntropy){
-                            bestSplitAttribute = i;
-                            bestSplit1 = j;
-                            bestSplit2 = k;
-                            bestWeightedEntropy = weightedEntropyOfTheChildren();
-                        }
+                    if(bestSplitAttribute == 20){
+                        replaceBestSplit(i, j, k);
                     }else{
-                        bestSplitAttribute = i;
-                        bestSplit1 = j;
-                        bestSplit2 = k;
-                        bestWeightedEntropy = weightedEntropyOfTheChildren();
+                        if (weightedEntropyOfTheChildren()<bestWeightedEntropy){
+                            replaceBestSplit(i, j, k);
+                        }
                     }
                 }
             }
         }
         divide(bestSplitAttribute,bestSplit1,bestSplit2);
-        if (weightedEntropyOfTheChildren()>entropy()){
-            makeChild();
-        }else{
-            children[0].split();
-            children[1].split();
-            children[2].split();
-        }
+        initAll();
+        splitAll();
+    }
+
+    private void replaceBestSplit(int i, double j, double k) {
+        bestSplitAttribute = i;
+        bestSplit1 = j;
+        bestSplit2 = k;
+        bestWeightedEntropy = weightedEntropyOfTheChildren();
     }
 
     private void divide(int attr, double a, double b){
-        children[0].kill();
-        children[1].kill();
-        children[2].kill();
+        killAll();
         for(Sample sample:samples){
             if(sample.get(attr) < a) children[0].samples.add(sample);
             else if(sample.get(attr) < b) children[1].samples.add(sample);
             else children[2].samples.add(sample);
         }
-        children[0].init(this);
-        children[1].init(this);
-        children[3].init(this);
+        initAll();
     }
 
     private double log(double a){
         return Math.log(a)/Math.log(2);
+    }
+    private void initAll(){
+        children[0].init();
+        children[1].init();
+        children[2].init();
+    }
+    private void killAll(){
+        children[0].kill();
+        children[1].kill();
+        children[2].kill();
+    }
+    private void splitAll(){
+        children[0].split();
+        children[1].split();
+        children[2].split();
     }
 
 }
