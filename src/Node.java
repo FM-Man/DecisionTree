@@ -17,6 +17,9 @@ public class Node {
         children[0] = new Node();
         children[1] = new Node();
         total = samples.size();
+        class1total=0;
+        class2total=0;
+        class3total=0;
         for (Sample sample : samples) {
             if (sample._class == 1) class1total++;
             else if (sample._class == 2) class2total++;
@@ -42,7 +45,7 @@ public class Node {
         if(class2total != 0)
             imp -= (class2total / total) * log(class2total / total);
         if(class3total != 0)
-            imp -= (class3total / total) * log(class3total / total);
+            imp -= (class3total / total) * log(class3total / total);//-p log p
 
         return imp;
     }
@@ -57,7 +60,7 @@ public class Node {
     }
 
 
-    public void split(){
+    public void split(){/// a=0 b=1 c=5 ab+bc+ca
         if(class1total*class2total + class1total*class3total + class2total*class3total != 0) {
             makeChild();
         }
@@ -65,7 +68,7 @@ public class Node {
     }
     private void makeChild(){
         for(int i=0; i<13; i++){
-            double quotient = (Driver.max[i]-Driver.min[i])/20;
+            double quotient = (Driver.max[i]-Driver.min[i])/100;
             for(double j = Driver.min[i]; j<Driver.max[i]; j+=quotient){
                 divide(i,j);
                 if (weightedEntropyOfTheChildren() < bestWeightedEntropy || bestSplitAttribute == 20){
@@ -77,10 +80,10 @@ public class Node {
         initAll();
         splitAll();
     }
-    private void divide(int attr, double a){
+    private void divide(int attr, double split){
         killAll();
         for(Sample sample:samples){
-            if(sample.get(attr) < a) children[0].samples.add(sample);
+            if(sample.get(attr) < split) children[0].samples.add(sample);
             else children[1].samples.add(sample);
         }
         initAll();

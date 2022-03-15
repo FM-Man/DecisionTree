@@ -39,21 +39,26 @@ public class Driver {
 
         double totalCorrectTest=0;
         double totalWrong=0;
-        for(int i=0;i<10000;i++){
+        for(int i=0;i<1;i++){
             train();
             double correctRatio = test();
             totalCorrectTest+=correctRatio*test.size();
             totalWrong+=(1-correctRatio)*test.size();
         }
         System.out.println("average correctness: "+totalCorrectTest/(totalCorrectTest+totalWrong)*100+"%");
+
+        print();
     }
 
     public static void train(){
         training = new ArrayList<>();
         test = new ArrayList<>();
         for (Sample sample:samples) {
-            if(Math.random() < .8) training.add(sample);
-            else test.add(sample);
+            if(Math.random() < .8) {
+                training.add(sample);
+            } else {
+                test.add(sample);
+            }
         }
 
         root = new Node();
@@ -69,17 +74,32 @@ public class Driver {
         for (Sample sample:test) {
             node = root;
             while (!node.isHomogenous){
-                if(sample.get(node.bestSplitAttribute) < node.bestSplit)
+                if(sample.get(node.bestSplitAttribute) < node.bestSplit) {
                     node = node.children[0];
-                else
+                } else {
                     node = node.children[1];
+                }
             }
             if(node.samples.get(0)._class == sample._class) {
                 correct++;
+            } else {
+                wrong++;
             }
-            else wrong++;
         }
         System.out.println("correct = "+correct+" wrong = "+wrong);
         return correct/(correct+wrong);
+    }
+
+    public static void print(){
+        if(root == null) return;
+        System.out.println("[1:"+root.class1total+" 2:"+root.class2total+" 3:"+root.class3total+"]");
+        print("--------", root.children[0]);
+        print("--------", root.children[0]);
+    }
+    public static void print(String s, Node node){
+        if(node == null) return;
+        System.out.println(s+"[1:"+node.class1total+" 2:"+node.class2total+" 3:"+node.class3total+"]");
+        print(s+"--------", node.children[0]);
+        print(s+"--------", node.children[1]);
     }
 }
