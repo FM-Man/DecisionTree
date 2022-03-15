@@ -45,7 +45,7 @@ public class Driver {
             totalCorrectTest+=correctRatio*test.size();
             totalWrong+=(1-correctRatio)*test.size();
         }
-        System.out.println("average correctness: "+totalCorrectTest/(totalCorrectTest+totalWrong)*100+"%");
+        System.out.println("average correctness: "+totalCorrectTest/(totalCorrectTest+totalWrong)*100+" %");
 
         print();
     }
@@ -94,12 +94,14 @@ public class Driver {
         if(root == null) return;
         System.out.println("[1:"+root.class1total+" 2:"+root.class2total+" 3:"+root.class3total+"]");
         print("--------", root.children[0]);
-        print("--------", root.children[0]);
+        print("--------", root.children[1]);
     }
     public static void print(String s, Node node){
-        if(node == null) return;
+        if(node== null) return;
         System.out.println(s+"[1:"+node.class1total+" 2:"+node.class2total+" 3:"+node.class3total+"]");
-        print(s+"--------", node.children[0]);
-        print(s+"--------", node.children[1]);
+        if(!node.isHomogenous) {
+            print(s + "--------", node.children[0]);
+            print(s + "--------", node.children[1]);
+        }
     }
 }
