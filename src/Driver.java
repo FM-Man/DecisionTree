@@ -12,7 +12,6 @@ public class Driver {
     public static double[] max = new double[13];
     public static Node root;
 
-
     public static void main(String[] args) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File("wine.data"));
 
@@ -32,16 +31,15 @@ public class Driver {
             Sample sample = new Sample(data);
             samples.add(sample);
 
-
-
             for (int i=0; i<13; i++){
                 if(sample.get(i) < min[i]) min[i] = sample.get(i);
                 if(sample.get(i) > max[i]) max[i] = sample.get(i);
             }
         }
+
         double totalCorrectTest=0;
         double totalWrong=0;
-        for(int i=0;i<10;i++){
+        for(int i=0;i<10000;i++){
             train();
             double correctRatio = test();
             totalCorrectTest+=correctRatio*test.size();
@@ -60,9 +58,10 @@ public class Driver {
 
         root = new Node();
         root.samples.addAll(training);
-        root.init();
+        root.initialize();
         root.split();
     }
+
     public static double test(){
         double correct = 0;
         double wrong = 0;
@@ -70,12 +69,10 @@ public class Driver {
         for (Sample sample:test) {
             node = root;
             while (!node.isHomogenous){
-                if(sample.get(node.bestSplitAttribute) < node.bestSplit1)
+                if(sample.get(node.bestSplitAttribute) < node.bestSplit)
                     node = node.children[0];
-                else if(sample.get(node.bestSplitAttribute) < node.bestSplit2)
-                    node = node.children[1];
                 else
-                    node = node.children[2];
+                    node = node.children[1];
             }
             if(node.samples.get(0)._class == sample._class) {
                 correct++;
