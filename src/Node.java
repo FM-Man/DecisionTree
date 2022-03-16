@@ -81,7 +81,7 @@ public class Node {
         splitAll();
     }
     private void divide(int attr, double split){
-        killAll();
+        killAllChildren();
         for(Sample sample:samples){
             if(sample.get(attr) < split) children[0].samples.add(sample);
             else children[1].samples.add(sample);
@@ -102,7 +102,7 @@ public class Node {
         children[0].initialize();
         children[1].initialize();
     }
-    private void killAll(){
+    private void killAllChildren(){
         children[0].kill();
         children[1].kill();
     }

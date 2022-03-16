@@ -39,13 +39,13 @@ public class Driver {
 
         double totalCorrectTest=0;
         double totalWrong=0;
-        for(int i=0;i<1;i++){
+        for(int i=0;i<100;i++){
             train();
             double correctRatio = test();
             totalCorrectTest+=correctRatio*test.size();
             totalWrong+=(1-correctRatio)*test.size();
         }
-        System.out.println("average correctness: "+totalCorrectTest/(totalCorrectTest+totalWrong)*100+" %");
+        System.out.format("\ntotat tested: %d\ntotal correct: %d\ntotal wrong: %d\naverage correctness: %.3f percent\n\n",Math.round(totalCorrectTest+totalWrong),Math.round(totalCorrectTest),Math.round(totalWrong),totalCorrectTest/(totalCorrectTest+totalWrong)*100);
 
         print();
     }
@@ -92,13 +92,24 @@ public class Driver {
 
     public static void print(){
         if(root == null) return;
-        System.out.println("[1:"+root.class1total+" 2:"+root.class2total+" 3:"+root.class3total+"]");
+        System.out.print("[1:"+root.class1total+" 2:"+root.class2total+" 3:"+root.class3total+"]");
+        if(root.bestSplitAttribute!=20) {
+            System.out.format("\nattr: %d split: %.3f\n", root.bestSplitAttribute, root.bestSplit);
+        }
+        else System.out.println();
         print("--------", root.children[0]);
         print("--------", root.children[1]);
     }
     public static void print(String s, Node node){
         if(node== null) return;
-        System.out.println(s+"[1:"+node.class1total+" 2:"+node.class2total+" 3:"+node.class3total+"]");
+        System.out.print(s+"[1:"+node.class1total+" 2:"+node.class2total+" 3:"+node.class3total+"]");
+        if(node.bestSplitAttribute!=20) {
+            System.out.println();
+            for (int i=0; i<s.length(); i++)
+                System.out.print(" ");
+            System.out.format("attr: %d split: %.3f\n", node.bestSplitAttribute, node.bestSplit);
+        }
+        else System.out.println();
         if(!node.isHomogenous) {
             print(s + "--------", node.children[0]);
             print(s + "--------", node.children[1]);
