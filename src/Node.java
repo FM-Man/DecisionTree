@@ -21,8 +21,8 @@ public class Node {
         class2total=0;
         class3total=0;
         for (Sample sample : samples) {
-            if (sample._class == 1) class1total++;
-            else if (sample._class == 2) class2total++;
+            if (sample.category == 1) class1total++;
+            else if (sample.category == 2) class2total++;
             else class3total++;
         }
     }
@@ -67,7 +67,7 @@ public class Node {
         else isHomogenous = true;
     }
     private void makeChild(){
-        for(int i=0; i<13; i++){
+        for(int i = 0; i< Driver.attributeNumber; i++){
             double quotient = (Driver.max[i]-Driver.min[i])/100;
             for(double j = Driver.min[i]; j<Driver.max[i]; j+=quotient){
                 divide(i,j);
