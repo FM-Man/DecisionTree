@@ -4,48 +4,58 @@ public class Node {
     ArrayList<Sample> samples = new ArrayList<>();
     Node[] children = new Node[2];
     double total = 0;
-    int class1total=0;
-    int class2total=0;
-    int class3total=0;
-    int bestSplitAttribute=20;
+    int[] classes;
+    int bestSplitAttribute=-1;
     double bestSplit;
     double bestWeightedEntropy;
     boolean isHomogenous = false;
+    double[] min;
+    double[] max;
 
 
-    public void initialize(){
+    public void initialize(int classNumber){
+        min = new double[Driver.attributeNumber];
+        max = new double[Driver.attributeNumber];
+        for(int i=0; i<Driver.attributeNumber;i++){
+            min[i] = Double.MAX_VALUE;
+            max[i] = Double.MIN_VALUE;
+        }
         children[0] = new Node();
         children[1] = new Node();
         total = samples.size();
-        class1total=0;
-        class2total=0;
-        class3total=0;
+        bestSplitAttribute = -1;
+
+        classes = new int[classNumber];
         for (Sample sample : samples) {
-            if (sample.category == 1) class1total++;
-            else if (sample.category == 2) class2total++;
-            else class3total++;
+            classes[sample.category-1] ++;
+
+            for (int i = 0; i < Driver.attributeNumber; i++) {
+                if (sample.get(i) < min[i]) min[i] = sample.get(i);
+                if (sample.get(i) > max[i]) max[i] = sample.get(i);
+            }
         }
+        //System.out.println("i");
     }
-    public  void kill(){
+    public  void kill(int classNumber){
         samples = new ArrayList<>();
         children = new Node[]{new Node(), new Node()};
         total = 0;
-        class1total=0;
-        class2total=0;
-        class3total=0;
-        bestSplitAttribute=20;
+        classes = new int[classNumber];
+        bestSplitAttribute=-1;
+        min = new double[Driver.attributeNumber];
+        max = new double[Driver.attributeNumber];
+        //System.out.println("k");
     }
 
 
     public double entropy(){
         double imp = 0;
 
-        if(class1total != 0)
-            imp -= (class1total / total) * log(class1total / total);
-        if(class2total != 0)
-            imp -= (class2total / total) * log(class2total / total);
-        if(class3total != 0)
-            imp -= (class3total / total) * log(class3total / total);//-p log p
+        for (int aClass : classes) {
+            if (aClass != 0) {
+                imp -= (aClass / total) * log(aClass / total);
+            }
+        }
 
         return imp;
     }
@@ -61,22 +71,33 @@ public class Node {
 
 
     public void split(){/// a=0 b=1 c=5 ab+bc+ca
-        if(class1total*class2total + class1total*class3total + class2total*class3total != 0) {
-            makeChild();
+        int homogenousFactor = 0;
+        for (int i=0; i<classes.length;i++) {
+            if(i==classes.length-1){
+                homogenousFactor += classes[i]*classes[0];
+            } else {
+                homogenousFactor += classes[i]*classes[i+1];
+            }
         }
+
+        if(homogenousFactor != 0) makeChild();
         else isHomogenous = true;
     }
     private void makeChild(){
         for(int i = 0; i< Driver.attributeNumber; i++){
-            double quotient = (Driver.max[i]-Driver.min[i])/100;
-            for(double j = Driver.min[i]; j<Driver.max[i]; j+=quotient){
-                divide(i,j);
-                if (weightedEntropyOfTheChildren() < bestWeightedEntropy || bestSplitAttribute == 20){
-                    replaceBestSplit(i, j);
+            double quotient = (max[i]-min[i])/100;
+
+            if(min[i] != -1){
+                for (double j = min[i]; j < max[i]; j += quotient) {
+                    divide(i, j);//int k =0;System.out.format("%d\n",k++);
+                    if (weightedEntropyOfTheChildren() < bestWeightedEntropy || bestSplitAttribute == -1) {
+                        replaceBestSplit(i, j);
+                    }
                 }
             }
         }
         divide(bestSplitAttribute, bestSplit);
+        //System.out.println("s");
         initAll();
         splitAll();
     }
@@ -87,6 +108,7 @@ public class Node {
             else children[1].samples.add(sample);
         }
         initAll();
+        //System.out.println("d");
     }
 
 
@@ -99,12 +121,12 @@ public class Node {
         return Math.log(a)/Math.log(2);
     }
     private void initAll(){
-        children[0].initialize();
-        children[1].initialize();
+        children[0].initialize(Driver.totalClasses);
+        children[1].initialize(Driver.totalClasses);
     }
     private void killAllChildren(){
-        children[0].kill();
-        children[1].kill();
+        children[0].kill(Driver.totalClasses);
+        children[1].kill(Driver.totalClasses);
     }
     private void splitAll(){
         children[0].split();

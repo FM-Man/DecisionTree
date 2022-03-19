@@ -9,46 +9,33 @@ public class Driver {
     public static ArrayList<Sample> training = new ArrayList<>();
     public static ArrayList<Sample> test = new ArrayList<>();
     public static int attributeNumber;
+    public static int totalClasses = 10;
 
-    public static double[] min;
-    public static double[] max;
+
     public static Node root;
 
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File("wine.data"));
-
-
+        Scanner scanner = new Scanner(new File("winequality-red.csv"));
 
         while(scanner.hasNext()){
             String current = scanner.nextLine();
-            String[] split = current.split(",",0);
+            String[] split = current.split(";",0);
             double[] data = new double[split.length];
             for (int i=0; i<split.length; i++){
                 data[i] = Double.parseDouble(split[i]);
             }
-            attributeNumber= data.length-1;
+            double t = data[0];
+            data[0] = data[data.length-1];
+            data[data.length-1] = t;
 
+            attributeNumber= data.length-1;
             Sample sample = new Sample(data);
             samples.add(sample);
-
-
-        }
-        min=new double[attributeNumber];
-        max=new double[attributeNumber];
-        for (int i=0; i<attributeNumber; i++){
-            min[i] = Double.MAX_VALUE;
-            max[i] = Double.MIN_VALUE;
-        }
-        for(Sample sample:samples){
-            for (int i = 0; i < attributeNumber; i++) {
-                if (sample.get(i) < min[i]) min[i] = sample.get(i);
-                if (sample.get(i) > max[i]) max[i] = sample.get(i);
-            }
         }
         Collections.shuffle(samples);
         double totalCorrectTest=0;
         double totalWrong=0;
-        for(int i=0;i<17;i++){
+        for(int i=0;i<1/*samples.size()/10*/;i++){
             train(i);
             double correctRatio = test();
             totalCorrectTest+=correctRatio*test.size();
@@ -66,16 +53,18 @@ public class Driver {
         training = new ArrayList<>();
         test = new ArrayList<>();
         for (int j=0;j<samples.size();j++) {
-            if(j<i*10 || j>=(i+1)*10){
-                training.add(samples.get(j));
-            } else {
-                test.add(samples.get(j));
-            }
+//            if(j<i*10 || j>=(i+1)*10){
+//                training.add(samples.get(j));
+//            } else {
+//                test.add(samples.get(j));
+//            }
+            if(Math.random() < .8) training.add(samples.get(j));
+            else test.add(samples.get(j));
         }
 
         root = new Node();
         root.samples.addAll(training);
-        root.initialize();
+        root.initialize(totalClasses);
         root.split();
     }
 
@@ -104,8 +93,15 @@ public class Driver {
 
     public static void print(){
         if(root == null) return;
-        System.out.print("[1:"+root.class1total+" 2:"+root.class2total+" 3:"+root.class3total+"]");
-        if(root.bestSplitAttribute!=20) {
+
+        String nodeDetail = "[ ";
+        for(int i=0; i<root.classes.length;i++){
+            nodeDetail += (i+1)+ ":" + root.classes[i]+" ";
+        }
+        nodeDetail +="]";
+        System.out.print(nodeDetail);
+
+        if(root.bestSplitAttribute!=-1) {
             System.out.format("\nattr: %d split: %.3f\n", root.bestSplitAttribute, root.bestSplit);
         }
         else System.out.println();
@@ -114,8 +110,15 @@ public class Driver {
     }
     public static void print(String s, Node node){
         if(node== null) return;
-        System.out.print(s+"[1:"+node.class1total+" 2:"+node.class2total+" 3:"+node.class3total+"]");
-        if(node.bestSplitAttribute!=20) {
+
+        String nodeDetail = "[ ";
+        for(int i=0; i<node.classes.length;i++){
+            nodeDetail += (i+1)+ ":" + node.classes[i]+" ";
+        }
+        nodeDetail +="]";
+        System.out.print(s+nodeDetail);
+
+        if(node.bestSplitAttribute!=-1) {
             System.out.println();
             for (int i=0; i<s.length(); i++)
                 System.out.print(" ");

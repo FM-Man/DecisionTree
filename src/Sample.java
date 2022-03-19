@@ -1,6 +1,6 @@
 public class Sample {
     public int category;
-    private double[] attributes;
+    private final double[] attributes;
 
     public Sample(double[] data){
         attributes = new double[data.length-1];
